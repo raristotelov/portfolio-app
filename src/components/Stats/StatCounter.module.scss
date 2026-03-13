@@ -1,0 +1,18 @@
+.wrapper {
+  text-align: center;
+}
+
+.value {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -1px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}

@@ -1,0 +1,26 @@
+.card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 28px 24px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+  cursor: default;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 85, 255, 0.15);
+  }
+}
+
+.icon {
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.name {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}

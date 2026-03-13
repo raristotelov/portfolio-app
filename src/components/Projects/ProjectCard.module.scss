@@ -1,0 +1,83 @@
+.card {
+  position: relative;
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+
+  &:hover .image {
+    transform: scale(1.05);
+  }
+
+  &:hover .overlay {
+    opacity: 1;
+  }
+}
+
+.thumbnail {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(242, 242, 242, 0.8);
+  opacity: 0;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.overlayLink {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--background);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: var(--accent-hover);
+  }
+}
+
+.info {
+  padding: 20px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tag {
+  background: rgba(0, 85, 255, 0.1);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.title {
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 14px;
+}

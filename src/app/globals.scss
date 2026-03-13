@@ -1,0 +1,95 @@
+// ── Design tokens ──
+:root {
+  --background: #f2f2f2;
+  --surface: #ffffff;
+  --surface-light: #e8e8e8;
+  --accent: #0055FF;
+  --accent-hover: #0044CC;
+  --accent-light: #3377FF;
+  --accent-lighter: #EBF0FF;
+  --text-primary: #0A0F1C;
+  --text-secondary: #6B7280;
+  --text-dark-soft: #1A2038;
+  --gray-700: #374151;
+  --gray-300: #D1D5DB;
+  --gray-100: #F3F4F6;
+
+  --font-sans: var(--font-sora), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+// ── Reset / base ──
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: linear-gradient(#f2f2f2, #fff);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+// ── Typography ──
+h1, h2, h3 {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+
+input, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+// ── Scrollbar ──
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}

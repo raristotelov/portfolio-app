@@ -1,0 +1,23 @@
+.wrapper {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.subtitle {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 30px;
+  color: var(--text-primary);
+
+  @media (min-width: 768px) {
+    font-size: 36px;
+  }
+}
