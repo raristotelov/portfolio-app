@@ -13,15 +13,10 @@ type ButtonProps = {
 
 export default function Button({
   variant = "primary",
-  small,
   className,
   ...props
 }: ButtonProps) {
-  const cls = [
-    styles.btn,
-    styles[variant],
-    className,
-  ]
+  const cls = [styles.btn, styles[variant], className]
     .filter(Boolean)
     .join(" ");
 

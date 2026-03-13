@@ -1,33 +1,18 @@
-import {
-  SiReact,
-  SiNextdotjs,
-  SiTypescript,
-  SiNodedotjs,
-  SiTailwindcss,
-  SiPostgresql,
-  SiSupabase,
-  SiMongodb,
-  SiGit,
-  SiVercel,
-  SiHtml5,
-} from "react-icons/si";
-import type { IconType } from "react-icons";
-
 export interface Skill {
   name: string;
-  icon: IconType;
+  icon: string;
 }
 
 export const skills: Skill[] = [
-  { name: "React", icon: SiReact },
-  { name: "Next.js", icon: SiNextdotjs },
-  { name: "TypeScript", icon: SiTypescript },
-  { name: "Node.js", icon: SiNodedotjs },
-  { name: "Tailwind CSS", icon: SiTailwindcss },
-  { name: "PostgreSQL", icon: SiPostgresql },
-  { name: "Supabase", icon: SiSupabase },
-  { name: "MongoDB", icon: SiMongodb },
-  { name: "Git", icon: SiGit },
-  { name: "Vercel", icon: SiVercel },
-  { name: "HTML/CSS", icon: SiHtml5 },
+  { name: "React", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+  { name: "Next.js", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" },
+  { name: "TypeScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
+  { name: "Node.js", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+  { name: "Tailwind CSS", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
+  { name: "PostgreSQL", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
+  { name: "Supabase", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" },
+  { name: "MongoDB", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
+  { name: "Git", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
+  { name: "Vercel", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
+  { name: "HTML/CSS", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
 ];

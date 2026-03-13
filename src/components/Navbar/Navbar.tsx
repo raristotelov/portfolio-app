@@ -48,6 +48,7 @@ export default function Navbar() {
               </a>
             </li>
           ))}
+
           <li>
             <Button as="a" href="#contact" variant="primary" small>
               Hire Me

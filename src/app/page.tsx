@@ -10,17 +10,17 @@ export default function Home() {
     <>
       <Navbar />
 
-      {/* <main>
+      <main>
         <Hero />
 
         <Skills />
 
-        <Projects />
+        {/* <Projects /> */}
 
         <Contact />
       </main>
 
-      <Footer /> */}
+      <Footer />
     </>
   );
 }

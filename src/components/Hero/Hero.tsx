@@ -1,8 +1,6 @@
 import { siteMetadata } from "@/lib/constants";
 import Button from "@/components/ui/Button";
 import SocialLinks from "@/components/ui/SocialLinks";
-import { stats } from "@/data/stats";
-import StatCounter from "@/components/Stats/StatCounter";
 import styles from "./Hero.module.scss";
 
 export default function Hero() {
