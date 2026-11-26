@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Sora, JetBrains_Mono } from "next/font/google";
 import { PHProvider } from "./providers";
-import "./globals.scss";
+import "@/styles/main.scss";
 
 const sora = Sora({
 	variable: "--font-sora",
