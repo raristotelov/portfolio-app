@@ -1,7 +1,7 @@
 "use client";
 
 import { HiMail, HiLocationMarker } from "react-icons/hi";
-import { siteMetadata } from "@/lib/constants";
+import { siteMetadata } from "@/data/profile";
 import styles from "./Contact.module.scss";
 
 const contactMethods = [

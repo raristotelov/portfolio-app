@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
-import { navLinks } from "@/lib/constants";
+import { navLinks } from "@/constants/navigation";
 import Button from "@/components/ui/Button";
 import styles from "./Navbar.module.scss";
 

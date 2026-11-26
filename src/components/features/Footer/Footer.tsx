@@ -1,4 +1,4 @@
-import { siteMetadata } from "@/lib/constants";
+import { siteMetadata } from "@/data/profile";
 import SocialLinks from "@/components/ui/SocialLinks";
 import styles from "./Footer.module.scss";
 

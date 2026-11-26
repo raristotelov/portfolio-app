@@ -1,7 +1,4 @@
-export interface Skill {
-	name: string;
-	icon: string;
-}
+import type { Skill } from "@/types/skill";
 
 export const skills: Skill[] = [
 	{ name: "JavaScript", icon: "/skills/javascript.svg" },

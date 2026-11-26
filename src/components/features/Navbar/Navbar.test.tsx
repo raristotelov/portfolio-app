@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { navLinks } from "@/lib/constants";
+import { navLinks } from "@/constants/navigation";
 import Navbar from "./Navbar";
 
 function getToggle() {

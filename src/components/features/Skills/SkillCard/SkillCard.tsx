@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { Skill } from "@/data/skills";
+import type { Skill } from "@/types/skill";
 import styles from "./SkillCard.module.scss";
 
 export default function SkillCard({ name, icon }: Skill) {

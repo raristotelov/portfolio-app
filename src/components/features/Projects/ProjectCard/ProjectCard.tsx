@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { HiExternalLink } from "react-icons/hi";
 import { FaGithub } from "react-icons/fa6";
-import type { Project } from "@/data/projects";
+import type { Project } from "@/types/project";
 import styles from "./ProjectCard.module.scss";
 
 export default function ProjectCard({ title, description, tags, image, liveUrl, repoUrl }: Project) {

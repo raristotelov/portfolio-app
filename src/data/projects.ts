@@ -1,11 +1,4 @@
-export interface Project {
-	title: string;
-	description: string;
-	tags: string[];
-	image: string;
-	liveUrl?: string;
-	repoUrl?: string;
-}
+import type { Project } from "@/types/project";
 
 export const projects: Project[] = [
 	{
