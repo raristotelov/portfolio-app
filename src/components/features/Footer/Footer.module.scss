@@ -1,0 +1,42 @@
+.footer {
+	border-top: 1px solid var(--gray-100);
+	background: var(--surface);
+}
+
+.inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 24px 0;
+
+	@media (max-width: 900px) {
+		flex-direction: column;
+		gap: 16px;
+		padding: 24px 32px;
+	}
+}
+
+.copyright {
+	font-size: 13px;
+	color: var(--text-secondary);
+	font-weight: 300;
+}
+
+.footerSocial {
+	// Override the fadeUp animation from SocialLinks
+	opacity: 1 !important;
+	animation: none !important;
+}
+
+.backToTop {
+	font-size: 13px;
+	color: var(--text-secondary);
+	font-weight: 500;
+	transition: color 0.2s;
+
+	&:hover {
+		color: var(--accent);
+	}
+}

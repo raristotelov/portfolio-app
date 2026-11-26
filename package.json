@@ -1,27 +1,38 @@
 {
-  "name": "portfolio-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.1.6",
-    "posthog-js": "^1.360.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-icons": "^5.6.0",
-    "sass": "^1.97.3"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "typescript": "^5"
-  }
+	"name": "portfolio-app",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "eslint --max-warnings 0",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"test": "jest"
+	},
+	"dependencies": {
+		"next": "16.4.6",
+		"posthog-js": "^1.360.1",
+		"react": "19.2.3",
+		"react-dom": "19.2.3",
+		"react-icons": "^5.6.0",
+		"sass": "^1.97.3"
+	},
+	"devDependencies": {
+		"@testing-library/dom": "^10.4.2",
+		"@testing-library/jest-dom": "^8.0.0",
+		"@testing-library/react": "^16.3.3",
+		"@testing-library/user-event": "^14.6.13",
+		"@types/jest": "^30.0.0",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"eslint": "^9",
+		"eslint-config-next": "16.4.6",
+		"jest": "^30.5.2",
+		"jest-environment-jsdom": "^30.5.2",
+		"prettier": "^3.10.1",
+		"typescript": "^5"
+	}
 }
