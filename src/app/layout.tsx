@@ -4,33 +4,32 @@ import { PHProvider } from "./providers";
 import "./globals.scss";
 
 const sora = Sora({
-  variable: "--font-sora",
-  weight: ["300", "400", "500", "800"],
-  subsets: ["latin"],
+	variable: "--font-sora",
+	weight: ["300", "400", "500", "800"],
+	subsets: ["latin"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  weight: ["400", "500"],
-  subsets: ["latin"],
+	variable: "--font-jetbrains",
+	weight: ["400", "500"],
+	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "John Doe — Full Stack Developer",
-  description:
-    "Portfolio of John Doe, a Full Stack Developer specializing in modern web applications.",
+	title: "John Doe — Full Stack Developer",
+	description: "Portfolio of John Doe, a Full Stack Developer specializing in modern web applications.",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" className={`${sora.variable} ${jetbrainsMono.variable}`}>
-      <body>
-        <PHProvider>{children}</PHProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" className={`${sora.variable} ${jetbrainsMono.variable}`}>
+			<body>
+				<PHProvider>{children}</PHProvider>
+			</body>
+		</html>
+	);
 }

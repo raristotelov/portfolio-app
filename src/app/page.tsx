@@ -1,26 +1,25 @@
 import Navbar from "@/components/Navbar/Navbar";
 import Hero from "@/components/Hero/Hero";
 import Skills from "@/components/Skills/Skills";
-import Projects from "@/components/Projects/Projects";
 import Contact from "@/components/Contact/Contact";
 import Footer from "@/components/Footer/Footer";
 
 export default function Home() {
-  return (
-    <>
-      <Navbar />
+	return (
+		<>
+			<Navbar />
 
-      <main>
-        <Hero />
+			<main>
+				<Hero />
 
-        <Skills />
+				<Skills />
 
-        {/* <Projects /> */}
+				{/* <Projects /> */}
 
-        <Contact />
-      </main>
+				<Contact />
+			</main>
 
-      <Footer />
-    </>
-  );
+			<Footer />
+		</>
+	);
 }

@@ -9,6 +9,7 @@ Roadmap for outstanding work on the portfolio.
 The `Projects` component (`src/components/Projects/Projects.tsx`) and its data file (`src/data/projects.ts`) are in place, but the section is disabled in `src/app/page.tsx` (line 18: `{/* <Projects /> */}`). The Navbar still links to `#projects`, so this is a dead anchor today.
 
 **To enable:**
+
 - Uncomment `<Projects />` in `src/app/page.tsx`.
 - Review and update `src/data/projects.ts` with the actual project entries (title, description, tags, links, images).
 - Confirm the project cards render correctly across desktop and mobile breakpoints.
@@ -20,6 +21,7 @@ The `Projects` component (`src/components/Projects/Projects.tsx`) and its data f
 The site renders on small viewports but hasn't had a focused mobile review. Spacing, typography scale, and section padding need to be audited and tightened on actual devices (not just devtools emulation).
 
 **Areas to check:**
+
 - Hero — name typography, avatar sizing, and button stack on narrow screens.
 - Navbar — mobile hamburger menu open/close behavior, link tap targets.
 - Skills grid — confirm the 2-column fallback under 640px looks balanced.
@@ -33,11 +35,13 @@ The site renders on small viewports but hasn't had a focused mobile review. Spac
 Design tokens already live as CSS custom properties in `src/app/globals.scss`, which is the right foundation — switching themes is just a matter of swapping the token values.
 
 **Decisions needed:**
+
 - **Trigger:** explicit toggle in the Navbar, or follow `prefers-color-scheme` automatically? (Or both — auto by default with a manual override.)
 - **Persistence:** `localStorage` to remember the user's choice across visits.
 - **FOUC handling:** apply the theme class on `<html>` before paint to avoid a flash of the wrong theme — typically a small inline script in `layout.tsx`.
 
 **Implementation outline:**
+
 - Define a `[data-theme="dark"]` (or `.dark` class) block in `globals.scss` overriding the token values.
 - Audit every component's hardcoded colors and replace with token references where any slipped through.
 - Add a toggle component (probably in `Navbar` or `ui/`) with sun/moon icons from `react-icons`.
@@ -49,11 +53,13 @@ Design tokens already live as CSS custom properties in `src/app/globals.scss`, w
 The Contact form in `src/components/Contact/Contact.tsx` currently calls `e.preventDefault()` on submit (line 49) and does nothing else. Name/email/message inputs aren't even controlled — the values are never read.
 
 **To make it work, decisions needed:**
+
 - **Delivery channel:** email (Resend, SendGrid, Mailgun), a third-party form service (Formspree, Web3Forms), or a custom API route writing to a DB?
 - **Where the handler lives:** Next.js Route Handler (`src/app/api/contact/route.ts`) is the natural fit if we own the backend.
 - **Spam protection:** honeypot field, hCaptcha/Turnstile, or rate limiting?
 
 **Implementation outline once decided:**
+
 - Convert the form to controlled inputs with `useState` (or `useFormState` if we want progressive enhancement).
 - Add client-side validation (required fields, valid email).
 - POST to the chosen endpoint on submit; show success / error UI states.
@@ -66,6 +72,7 @@ The Contact form in `src/components/Contact/Contact.tsx` currently calls `e.prev
 A "by the numbers" section — e.g., years of experience, projects shipped, clients served, technologies mastered. Would sit between Hero and Skills (or between Projects and Contact) and use animated counters that tick up when scrolled into view.
 
 **Open questions when we revisit:**
+
 - Which stats are honest and meaningful (avoid vanity metrics).
 - Whether to animate counters on scroll (needs `IntersectionObserver`).
 - Visual treatment — full-bleed dark band, inline cards, or matching the Skills grid style.

@@ -52,9 +52,9 @@ Composed in `src/app/page.tsx` in this order:
 
 3. **Skills** (`components/Skills`)
    `#skills` anchor. 4-column responsive grid (2-column under 640px) of `SkillCard` tiles. Data lives in `src/data/skills.ts` — currently 12 skills across 3 rows:
-   - Row 1: JavaScript, TypeScript, React, Next.js
-   - Row 2: Tailwind CSS, Node.js, PostgreSQL, Supabase
-   - Row 3: MongoDB, Docker, Vercel, Git
+    - Row 1: JavaScript, TypeScript, React, Next.js
+    - Row 2: Tailwind CSS, Node.js, PostgreSQL, Supabase
+    - Row 3: MongoDB, Docker, Vercel, Git
 
 4. **Contact** (`components/Contact`)
    `#contact` anchor. Two contact-method cards (Email, Location) plus a message form (Name, Email, Message). Form currently has `onSubmit={(e) => e.preventDefault()}` — **submission is not wired to a backend yet.**
