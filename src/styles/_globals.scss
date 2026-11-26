@@ -5,7 +5,7 @@ html {
 }
 
 body {
-	background: linear-gradient(#f2f2f2, #fff);
+	background: linear-gradient(var(--background), var(--surface));
 	background-attachment: fixed;
 	color: var(--text-primary);
 	font-family: var(--font-sans);

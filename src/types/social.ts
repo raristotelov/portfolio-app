@@ -1,9 +1,7 @@
 import type { IconType } from "react-icons";
 
-export type SocialId = "github" | "linkedin" | "x";
-
 export interface SocialLink {
-	id: SocialId;
+	id: string;
 	name: string;
 	href: string;
 	icon: IconType;

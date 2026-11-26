@@ -1,7 +1,7 @@
 @use "../../../styles/mixins" as *;
 
 .section {
-	background: linear-gradient(180deg, var(--surface) 0%, #f8f9fc 100%);
+	background: linear-gradient(180deg, var(--surface) 0%, var(--hero-gradient-end) 100%);
 }
 
 // ── Hero content ──
@@ -18,7 +18,7 @@
 		width: 500px;
 		height: 500px;
 		border-radius: 50%;
-		background: radial-gradient(circle, rgba(0, 85, 255, 0.04) 0%, transparent 70%);
+		background: radial-gradient(circle, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 70%);
 		pointer-events: none;
 	}
 
@@ -141,8 +141,8 @@
 	width: 220px;
 	height: 220px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, var(--accent-lighter) 0%, rgba(0, 85, 255, 0.06) 100%);
-	border: 3px solid rgba(0, 85, 255, 0.12);
+	background: linear-gradient(135deg, var(--accent-lighter) 0%, var(--surface) 100%);
+	border: 3px solid color-mix(in srgb, var(--accent) 24%, transparent);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -164,7 +164,7 @@
 	right: -10px;
 	bottom: -10px;
 	border-radius: 50%;
-	border: 1px solid rgba(0, 85, 255, 0.08);
+	border: 1px solid color-mix(in srgb, var(--accent) 16%, transparent);
 	animation: pulse 4s ease-in-out infinite;
 }
 
@@ -173,36 +173,14 @@
 	bottom: 8px;
 	right: -4px;
 	background: var(--accent);
-	color: var(--surface);
+	color: var(--static-white);
 	font-family: var(--font-mono);
 	font-size: 10px;
 	font-weight: 700;
 	padding: 5px 10px;
 	border-radius: 8px;
 	letter-spacing: 0.5px;
-	box-shadow: 0 4px 12px rgba(0, 85, 255, 0.3);
-}
-
-// ── Stats bar ──
-.statsBar {
-	display: flex;
-	justify-content: center;
-	padding: 40px 64px;
-	border-top: 1px solid var(--gray-100);
-	background: var(--surface);
-}
-
-.statsGrid {
-	display: flex;
-	justify-content: center;
-	gap: 64px;
-	max-width: 1200px;
-	width: 100%;
-
-	@include below-desktop {
-		gap: 32px;
-		flex-wrap: wrap;
-	}
+	box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 // ── Animations ──
@@ -218,13 +196,4 @@
 	}
 }
 
-@keyframes fadeUp {
-	from {
-		opacity: 0;
-		transform: translateY(16px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
+@include fade-up-keyframes;

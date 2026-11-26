@@ -1,0 +1,37 @@
+.toggle {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	background: var(--gray-100);
+	border: 1px solid var(--gray-300);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-secondary);
+	transition: all 0.2s;
+
+	&:hover {
+		border-color: var(--accent);
+		background: var(--accent-lighter);
+		color: var(--accent);
+	}
+}
+
+.moon {
+	display: block;
+}
+
+.sun {
+	display: none;
+}
+
+:global(:root[data-theme="dark"]) {
+	.moon {
+		display: none;
+	}
+
+	.sun {
+		display: block;
+	}
+}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Sora, JetBrains_Mono } from "next/font/google";
+import { themeInitScript } from "@/lib/themeInitScript";
 import { PHProvider } from "./providers";
 import "@/styles/main.scss";
 
@@ -26,7 +27,11 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className={`${sora.variable} ${jetbrainsMono.variable}`}>
+		<html lang="en" className={`${sora.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+			<head>
+				<script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+			</head>
+
 			<body>
 				<PHProvider>{children}</PHProvider>
 			</body>

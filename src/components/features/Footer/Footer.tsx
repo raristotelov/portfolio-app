@@ -10,7 +10,7 @@ export default function Footer() {
 					&copy; {new Date().getFullYear()} {siteMetadata.name}. All rights reserved.
 				</p>
 
-				<SocialLinks size={16} className={styles.footerSocial} />
+				<SocialLinks size={16} animated={false} />
 
 				<a href="#home" className={styles.backToTop}>
 					Back to top &uarr;
