@@ -30,12 +30,18 @@ export default function Navbar() {
 					</Button>
 				</div>
 
-				<button className={styles.hamburger} onClick={() => setOpen(!open)} aria-label="Toggle menu">
+				<button
+					className={styles.hamburger}
+					onClick={() => setOpen(!open)}
+					aria-label="Toggle menu"
+					aria-expanded={open}
+					aria-controls="mobile-menu"
+				>
 					{open ? <HiX size={24} /> : <HiMenuAlt3 size={24} />}
 				</button>
 			</div>
 
-			<div className={`${styles.mobileMenu} ${open ? styles.open : ""}`}>
+			<div id="mobile-menu" className={`${styles.mobileMenu} ${open ? styles.open : ""}`}>
 				<ul className={styles.mobileLinks}>
 					{navLinks.map((link) => (
 						<li key={link.href}>
