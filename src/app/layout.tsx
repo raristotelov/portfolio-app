@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Sora, JetBrains_Mono } from "next/font/google";
+import { PHProvider } from "./providers";
 import "./globals.scss";
 
 const sora = Sora({
@@ -28,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${sora.variable} ${jetbrainsMono.variable}`}>
       <body>
-        {children}
+        <PHProvider>{children}</PHProvider>
       </body>
     </html>
   );
