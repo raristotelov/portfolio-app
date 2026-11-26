@@ -1,7 +1,10 @@
 import { siteMetadata } from "@/data/profile";
 import Button from "@/components/ui/Button";
 import SocialLinks from "@/components/ui/SocialLinks";
+import type { SocialId } from "@/types/social";
 import styles from "./Hero.module.scss";
+
+const HERO_SOCIALS: readonly SocialId[] = ["github", "linkedin"];
 
 export default function Hero() {
 	return (
@@ -40,7 +43,7 @@ export default function Hero() {
 							</Button>
 						</div>
 
-						<SocialLinks />
+						<SocialLinks include={HERO_SOCIALS} />
 					</div>
 
 					<div className={styles.heroRight}>

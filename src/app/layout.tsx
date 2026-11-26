@@ -5,19 +5,19 @@ import "@/styles/main.scss";
 
 const sora = Sora({
 	variable: "--font-sora",
-	weight: ["300", "400", "500", "800"],
+	weight: ["300", "400", "600", "700", "800"],
 	subsets: ["latin"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
 	variable: "--font-jetbrains",
-	weight: ["400", "500"],
+	weight: ["400", "500", "700"],
 	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-	title: "John Doe — Full Stack Developer",
-	description: "Portfolio of John Doe, a Full Stack Developer specializing in modern web applications.",
+	title: "Radostin Aristotelov — Full Stack Developer",
+	description: "Portfolio of Radostin Aristotelov, a Full Stack Developer specializing in modern web applications.",
 };
 
 export default function RootLayout({
