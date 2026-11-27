@@ -1,4 +1,4 @@
-import { CONTACT_FIELD_ERRORS, CONTACT_MAX_LENGTHS, CONTACT_TOO_LONG_ERRORS } from "@/constants/contact";
+import { CONTACT_FIELD_ERRORS, CONTACT_HONEYPOT_FIELD, CONTACT_MAX_LENGTHS, CONTACT_TOO_LONG_ERRORS } from "@/constants/contact";
 import { parseContactRequestBody, trimContactValues, validateContactField, validateContactForm } from "./contactValidation";
 
 const validValues = { name: "Ada Lovelace", email: "ada@example.com", message: "Hello there" };
@@ -30,14 +30,40 @@ describe("validateContactField", () => {
 		expect(validateContactField(field, "   \n\t ")).toBe(CONTACT_FIELD_ERRORS[field]);
 	});
 
-	it.each(["plainaddress", "missing@tld", "@example.com", "two words@example.com", "a@b@c.com", "ada@example."])(
-		"rejects the invalid email %j",
-		(email) => {
-			expect(validateContactField("email", email)).toBe(CONTACT_FIELD_ERRORS.email);
-		},
-	);
+	it.each([
+		"plainaddress",
+		"missing@tld",
+		"@example.com",
+		"two words@example.com",
+		"a@b@c.com",
+		"ada@example.",
+		"a,b@c.de",
+		"x<y@z.com",
+		'"quoted local"@example.com',
+		'"quoted"@example.com',
+		"a;b@example.com",
+		"ada@example.123",
+		"ada@example.c",
+		".ada@example.com",
+		"ada.@example.com",
+		"a..da@example.com",
+		"ada@.example.com",
+		"ada@example..com",
+		"ada@-example.com",
+		"ada@example.com.",
+	])("rejects the invalid email %j", (email) => {
+		expect(validateContactField("email", email)).toBe(CONTACT_FIELD_ERRORS.email);
+	});
 
-	it.each(["ada@example.com", "a.b+tag@sub.example.co.uk", "  ada@example.com  "])("accepts the valid email %j", (email) => {
+	it.each([
+		"ada@example.com",
+		"a.b+tag@sub.example.co.uk",
+		"  ada@example.com  ",
+		"o'brien@example.ie",
+		"user_name@ex-ample.com",
+		"a@b.co",
+		"x!#$%&*/=?^`{|}~-y@example.org",
+	])("accepts the valid email %j", (email) => {
 		expect(validateContactField("email", email)).toBeUndefined();
 	});
 
@@ -97,23 +123,27 @@ describe("validateContactForm", () => {
 
 describe("parseContactRequestBody", () => {
 	it("returns the fields and honeypot of a valid body", () => {
-		expect(parseContactRequestBody({ ...validValues, website: "" })).toEqual({ ...validValues, website: "" });
+		expect(parseContactRequestBody({ ...validValues, [CONTACT_HONEYPOT_FIELD]: "" })).toEqual({ ...validValues, [CONTACT_HONEYPOT_FIELD]: "" });
 	});
 
 	it("keeps a filled honeypot value", () => {
-		expect(parseContactRequestBody({ ...validValues, website: "spam.example" })?.website).toBe("spam.example");
+		expect(parseContactRequestBody({ ...validValues, [CONTACT_HONEYPOT_FIELD]: "spam.example" })?.[CONTACT_HONEYPOT_FIELD]).toBe("spam.example");
 	});
 
 	it("defaults a missing honeypot to an empty string", () => {
-		expect(parseContactRequestBody(validValues)?.website).toBe("");
+		expect(parseContactRequestBody(validValues)?.[CONTACT_HONEYPOT_FIELD]).toBe("");
 	});
 
 	it("defaults a non-string honeypot to an empty string", () => {
-		expect(parseContactRequestBody({ ...validValues, website: 5 })?.website).toBe("");
+		expect(parseContactRequestBody({ ...validValues, [CONTACT_HONEYPOT_FIELD]: 5 })?.[CONTACT_HONEYPOT_FIELD]).toBe("");
+	});
+
+	it("ignores the former honeypot field name", () => {
+		expect(parseContactRequestBody({ ...validValues, website: "spam.example" })?.[CONTACT_HONEYPOT_FIELD]).toBe("");
 	});
 
 	it("ignores unknown properties", () => {
-		expect(parseContactRequestBody({ ...validValues, extra: "x" })).toEqual({ ...validValues, website: "" });
+		expect(parseContactRequestBody({ ...validValues, extra: "x" })).toEqual({ ...validValues, [CONTACT_HONEYPOT_FIELD]: "" });
 	});
 
 	it.each([null, undefined, "text", 42, true, []])("returns null for the non-object body %j", (body) => {

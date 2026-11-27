@@ -4,6 +4,8 @@ import {
 	CONTACT_EMAIL_FALLBACK_SENDER_NAME,
 	CONTACT_EMAIL_SENDER_SUFFIX,
 	CONTACT_EMAIL_SUBJECT_PREFIX,
+	CONTACT_GMAIL_COMPOSE_URL,
+	CONTACT_REPLY_SUBJECT,
 } from "@/constants/contact";
 import ContactNotificationEmail from "@/emails/ContactNotificationEmail";
 import type { ContactFormValues } from "@/types/contact";
@@ -22,6 +24,7 @@ export interface ContactEmailContent {
 const LAST_CONTROL_CHARACTER_CODE = 31;
 const DELETE_CHARACTER_CODE = 127;
 const DISPLAY_NAME_FORBIDDEN_CHARACTERS = /["<>\\]/g;
+const BIDI_AND_FORMAT_CHARACTERS = /[​-‏‪-‮⁦-⁩﻿]/g;
 const ANGLE_BRACKET_ADDRESS_PATTERN = /<([^<>]+)>\s*$/;
 const ENCODED_AT_SIGN = /%40/g;
 
@@ -45,7 +48,7 @@ function toSingleLine(value: string): string {
 		})
 		.join("");
 
-	return withoutControlCharacters.replace(/\s+/g, " ").trim();
+	return withoutControlCharacters.replace(BIDI_AND_FORMAT_CHARACTERS, "").replace(/\s+/g, " ").trim();
 }
 
 function extractEmailAddress(from: string): string {
@@ -72,6 +75,14 @@ export function buildMailtoHref(email: string): string {
 	return `mailto:${encodeURIComponent(email).replace(ENCODED_AT_SIGN, "@")}`;
 }
 
+export function buildGmailComposeUrl(email: string, subject: string): string {
+	const url = new URL(CONTACT_GMAIL_COMPOSE_URL);
+
+	url.search = new URLSearchParams({ view: "cm", fs: "1", to: email, su: subject }).toString();
+
+	return url.toString();
+}
+
 export function buildContactEmailContent({ name, email, message }: ContactFormValues): ContactEmailContent {
 	return {
 		subject: `${CONTACT_EMAIL_SUBJECT_PREFIX} ${toSingleLine(name)}`,
@@ -87,7 +98,8 @@ export async function renderContactEmailHtml({ name, email, message }: ContactFo
 			email,
 			message,
 			firstName: getFirstName(name),
-			replyHref: buildMailtoHref(email),
+			emailHref: buildMailtoHref(email),
+			replyHref: buildGmailComposeUrl(email, CONTACT_REPLY_SUBJECT),
 		}),
 	);
 

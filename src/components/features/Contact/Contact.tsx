@@ -103,13 +103,15 @@ export default function Contact() {
 					/>
 
 					<div className={styles.honeypot} aria-hidden="true">
-						<label htmlFor="contact-website">Website</label>
+						<label htmlFor="contact-trap">Leave this field empty</label>
 						<input
-							id="contact-website"
+							id="contact-trap"
 							type="text"
 							name={CONTACT_HONEYPOT_FIELD}
 							tabIndex={-1}
 							autoComplete="off"
+							data-lpignore="true"
+							data-1p-ignore
 							value={honeypot}
 							onChange={(event) => setHoneypot(event.target.value)}
 						/>

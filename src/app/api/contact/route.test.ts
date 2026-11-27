@@ -5,7 +5,10 @@ import {
 	CONTACT_EMAIL_SENDER_SUFFIX,
 	CONTACT_EMAIL_SUBJECT_PREFIX,
 	CONTACT_FIELD_ERRORS,
+	CONTACT_HONEYPOT_FIELD,
 	CONTACT_INVALID_REQUEST_MESSAGE,
+	CONTACT_JSON_CONTENT_TYPE,
+	CONTACT_MAX_BODY_BYTES,
 	CONTACT_MAX_LENGTHS,
 	CONTACT_SERVER_ERROR_MESSAGE,
 	CONTACT_TOO_LONG_ERRORS,
@@ -25,14 +28,55 @@ const TEST_ENV = {
 	CONTACT_TO_EMAIL: "inbox@recipient.test",
 };
 
-const validBody = { name: "Ada Lovelace", email: "ada@example.com", message: "Hello there", website: "" };
+const validBody = { name: "Ada Lovelace", email: "ada@example.com", message: "Hello there", [CONTACT_HONEYPOT_FIELD]: "" };
+
+const JSON_HEADERS = { "Content-Type": CONTACT_JSON_CONTENT_TYPE };
+
+function postWith(init: RequestInit): Promise<Response> {
+	return POST(new Request("http://localhost/api/contact", { method: "POST", ...init }));
+}
 
 function postJson(body: unknown): Promise<Response> {
-	return POST(new Request("http://localhost/api/contact", { method: "POST", body: JSON.stringify(body) }));
+	return postWith({ headers: JSON_HEADERS, body: JSON.stringify(body) });
 }
 
 function postRaw(raw: string): Promise<Response> {
-	return POST(new Request("http://localhost/api/contact", { method: "POST", body: raw }));
+	return postWith({ headers: JSON_HEADERS, body: raw });
+}
+
+function streamOf(chunks: readonly Uint8Array[], failure?: Error): ReadableStream<Uint8Array> {
+	let index = 0;
+
+	return new ReadableStream<Uint8Array>({
+		pull(controller) {
+			if (index < chunks.length) {
+				controller.enqueue(chunks[index]);
+				index += 1;
+			} else if (failure) {
+				controller.error(failure);
+			} else {
+				controller.close();
+			}
+		},
+	});
+}
+
+function postStream(stream: ReadableStream<Uint8Array>, headers: Record<string, string> = JSON_HEADERS): Promise<Response> {
+	return POST(
+		new Request("http://localhost/api/contact", {
+			method: "POST",
+			headers,
+			body: stream,
+			duplex: "half",
+		} as RequestInit),
+	);
+}
+
+function validJsonOfBytes(totalBytes: number): string {
+	const base = { ...validBody, padding: "" };
+	const filler = totalBytes - JSON.stringify(base).length;
+
+	return JSON.stringify({ ...base, padding: "a".repeat(filler) });
 }
 
 describe("POST /api/contact", () => {
@@ -167,7 +211,7 @@ describe("POST /api/contact", () => {
 		});
 
 		it("trims the values before sending", async () => {
-			await postJson({ name: "  Ada  ", email: " ada@example.com ", message: "  Hi  ", website: "" });
+			await postJson({ name: "  Ada  ", email: " ada@example.com ", message: "  Hi  ", [CONTACT_HONEYPOT_FIELD]: "" });
 
 			expect(mockSend).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -186,6 +230,15 @@ describe("POST /api/contact", () => {
 			expect(subject).not.toMatch(/[\r\n]/);
 		});
 
+		it("strips bidirectional and zero-width characters from the subject and sender name", async () => {
+			await postJson({ ...validBody, name: "Ada‮evil​x⁦y﻿" });
+
+			const { subject, from } = mockSend.mock.calls[0][0] as { subject: string; from: string };
+
+			expect(subject).toBe(`${CONTACT_EMAIL_SUBJECT_PREFIX} Adaevilxy`);
+			expect(from).toBe(`"Adaevilxy ${CONTACT_EMAIL_SENDER_SUFFIX}" <${TEST_ENV.CONTACT_FROM_EMAIL}>`);
+		});
+
 		it("accepts a body without the honeypot field", async () => {
 			const { name, email, message } = validBody;
 			const response = await postJson({ name, email, message });
@@ -200,7 +253,7 @@ describe("POST /api/contact", () => {
 				name: "a".repeat(CONTACT_MAX_LENGTHS.name),
 				email: `${"a".repeat(CONTACT_MAX_LENGTHS.email - domain.length)}${domain}`,
 				message: "a".repeat(CONTACT_MAX_LENGTHS.message),
-				website: "",
+				[CONTACT_HONEYPOT_FIELD]: "",
 			});
 
 			expect(response.status).toBe(200);
@@ -209,21 +262,21 @@ describe("POST /api/contact", () => {
 
 	describe("honeypot", () => {
 		it("responds 200 with success when the honeypot is filled", async () => {
-			const response = await postJson({ ...validBody, website: "spam.example" });
+			const response = await postJson({ ...validBody, [CONTACT_HONEYPOT_FIELD]: "spam.example" });
 
 			expect(response.status).toBe(200);
 			expect(await response.json()).toEqual({ success: true });
 		});
 
 		it("does not send an email when the honeypot is filled", async () => {
-			await postJson({ ...validBody, website: "spam.example" });
+			await postJson({ ...validBody, [CONTACT_HONEYPOT_FIELD]: "spam.example" });
 
 			expect(mockSend).not.toHaveBeenCalled();
 			expect(Resend).not.toHaveBeenCalled();
 		});
 
 		it("responds 200 for a filled honeypot even when the other fields are invalid", async () => {
-			const response = await postJson({ name: "", email: "bad", message: "", website: "spam.example" });
+			const response = await postJson({ name: "", email: "bad", message: "", [CONTACT_HONEYPOT_FIELD]: "spam.example" });
 
 			expect(response.status).toBe(200);
 			expect(mockSend).not.toHaveBeenCalled();
@@ -232,9 +285,115 @@ describe("POST /api/contact", () => {
 		it("responds 200 for a filled honeypot even when the env vars are missing", async () => {
 			delete process.env.RESEND_API_KEY;
 
-			const response = await postJson({ ...validBody, website: "spam.example" });
+			const response = await postJson({ ...validBody, [CONTACT_HONEYPOT_FIELD]: "spam.example" });
 
 			expect(response.status).toBe(200);
+		});
+	});
+
+	describe("content type", () => {
+		const body = JSON.stringify(validBody);
+
+		it("responds 415 when the content type header is missing", async () => {
+			const response = await postWith({ body });
+
+			expect(response.status).toBe(415);
+			expect(await response.json()).toEqual({ message: CONTACT_INVALID_REQUEST_MESSAGE });
+		});
+
+		it.each(["text/plain", "application/x-www-form-urlencoded", "application/jsonp", "text/json"])(
+			"responds 415 for the content type %s",
+			async (contentType) => {
+				const response = await postWith({ headers: { "Content-Type": contentType }, body });
+
+				expect(response.status).toBe(415);
+			},
+		);
+
+		it("does not send an email for an unsupported content type", async () => {
+			await postWith({ headers: { "Content-Type": "text/plain" }, body });
+
+			expect(mockSend).not.toHaveBeenCalled();
+		});
+
+		it("checks the content type before the body is parsed", async () => {
+			const response = await postWith({ headers: { "Content-Type": "text/plain" }, body: "{not json" });
+
+			expect(response.status).toBe(415);
+		});
+
+		it("accepts a charset parameter", async () => {
+			const response = await postWith({ headers: { "Content-Type": "application/json; charset=utf-8" }, body });
+
+			expect(response.status).toBe(200);
+		});
+
+		it("accepts the content type in any letter case", async () => {
+			const response = await postWith({ headers: { "Content-Type": "Application/JSON" }, body });
+
+			expect(response.status).toBe(200);
+		});
+	});
+
+	describe("body size limit", () => {
+		it("accepts a body of exactly the limit", async () => {
+			const raw = validJsonOfBytes(CONTACT_MAX_BODY_BYTES);
+
+			expect(new TextEncoder().encode(raw).byteLength).toBe(CONTACT_MAX_BODY_BYTES);
+
+			const response = await postRaw(raw);
+
+			expect(response.status).toBe(200);
+		});
+
+		it("responds 413 when the declared Content-Length is over the limit", async () => {
+			const response = await postWith({
+				headers: { ...JSON_HEADERS, "Content-Length": String(CONTACT_MAX_BODY_BYTES + 1) },
+				body: JSON.stringify(validBody),
+			});
+
+			expect(response.status).toBe(413);
+			expect(await response.json()).toEqual({ message: CONTACT_INVALID_REQUEST_MESSAGE });
+		});
+
+		it("does not send an email for an oversized body", async () => {
+			await postRaw(validJsonOfBytes(CONTACT_MAX_BODY_BYTES + 1));
+
+			expect(mockSend).not.toHaveBeenCalled();
+		});
+
+		it("responds 413 for an oversized body with no Content-Length header", async () => {
+			const raw = validJsonOfBytes(CONTACT_MAX_BODY_BYTES + 1);
+			const response = await postStream(streamOf([new TextEncoder().encode(raw)]));
+
+			expect(response.status).toBe(413);
+		});
+
+		it("responds 413 when the header understates the streamed body", async () => {
+			const raw = validJsonOfBytes(CONTACT_MAX_BODY_BYTES + 1);
+			const response = await postStream(streamOf([new TextEncoder().encode(raw)]), { ...JSON_HEADERS, "Content-Length": "10" });
+
+			expect(response.status).toBe(413);
+		});
+
+		it("responds 413 when the limit is crossed across several chunks", async () => {
+			const chunk = new TextEncoder().encode("a".repeat(CONTACT_MAX_BODY_BYTES / 2 + 1));
+			const response = await postStream(streamOf([chunk, chunk]));
+
+			expect(response.status).toBe(413);
+		});
+
+		it("accepts a streamed body of exactly the limit", async () => {
+			const response = await postStream(streamOf([new TextEncoder().encode(validJsonOfBytes(CONTACT_MAX_BODY_BYTES))]));
+
+			expect(response.status).toBe(200);
+		});
+
+		it("responds 400 when the body stream errors while being read", async () => {
+			const response = await postStream(streamOf([new TextEncoder().encode('{"name":')], new Error("connection reset")));
+
+			expect(response.status).toBe(400);
+			expect(await response.json()).toEqual({ message: CONTACT_INVALID_REQUEST_MESSAGE });
 		});
 	});
 
@@ -257,13 +416,26 @@ describe("POST /api/contact", () => {
 		});
 
 		it("responds 400 with every field error when all fields are empty", async () => {
-			const response = await postJson({ name: "", email: "", message: "", website: "" });
+			const response = await postJson({ name: "", email: "", message: "", [CONTACT_HONEYPOT_FIELD]: "" });
 
 			expect(response.status).toBe(400);
 			expect((await response.json()).errors).toEqual(CONTACT_FIELD_ERRORS);
 		});
 
-		it.each(["plainaddress", "missing@tld", "two words@example.com", "@example.com"])("responds 400 for the invalid email %j", async (email) => {
+		it.each([
+			"plainaddress",
+			"missing@tld",
+			"two words@example.com",
+			"@example.com",
+			"a,b@c.de",
+			"x<y@z.com",
+			'"quoted"@example.com',
+			"a;b@example.com",
+			"ada@example.123",
+			".ada@example.com",
+			"ada.@example.com",
+			"a..da@example.com",
+		])("responds 400 for the invalid email %j", async (email) => {
 			const response = await postJson({ ...validBody, email });
 
 			expect(response.status).toBe(400);

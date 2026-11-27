@@ -5,10 +5,13 @@ import {
 	CONTACT_EMAIL_HEADING,
 	CONTACT_EMAIL_SENDER_SUFFIX,
 	CONTACT_EMAIL_SUBJECT_PREFIX,
+	CONTACT_GMAIL_COMPOSE_URL,
+	CONTACT_REPLY_SUBJECT,
 } from "@/constants/contact";
 import {
 	buildContactEmailContent,
 	buildContactSender,
+	buildGmailComposeUrl,
 	buildMailtoHref,
 	getFirstName,
 	readContactEmailConfig,
@@ -59,6 +62,12 @@ describe("buildContactEmailContent", () => {
 		expect(subject).toBe(`${CONTACT_EMAIL_SUBJECT_PREFIX} Ada Lovelace`);
 	});
 
+	it.each(["​", "‏", "‪", "‮", "⁦", "⁩", "﻿"])("strips the format character %j from the subject", (character) => {
+		const { subject } = buildContactEmailContent({ name: `Ada${character}Lovelace`, email: "ada@example.com", message: "Hi" });
+
+		expect(subject).toBe(`${CONTACT_EMAIL_SUBJECT_PREFIX} AdaLovelace`);
+	});
+
 	it("puts name, email and message in the body", () => {
 		const { text } = buildContactEmailContent({ name: "Ada", email: "ada@example.com", message: "Hello\nthere" });
 
@@ -88,6 +97,16 @@ describe("buildContactSender", () => {
 		expect(sender).toBe(`"Ada Bcc: evil@x.test ${CONTACT_EMAIL_SENDER_SUFFIX}" <from@sender.test>`);
 	});
 
+	it("strips bidirectional and zero-width characters from the display name", () => {
+		expect(buildContactSender("‮Ada​ Lovelace⁦", "from@sender.test")).toBe(`"Ada Lovelace ${CONTACT_EMAIL_SENDER_SUFFIX}" <from@sender.test>`);
+	});
+
+	it("falls back to a generic name when only format characters remain", () => {
+		expect(buildContactSender("​‮﻿", "from@sender.test")).toBe(
+			`"${CONTACT_EMAIL_FALLBACK_SENDER_NAME} ${CONTACT_EMAIL_SENDER_SUFFIX}" <from@sender.test>`,
+		);
+	});
+
 	it("falls back to a generic name when nothing usable remains", () => {
 		expect(buildContactSender('"<>"', "from@sender.test")).toBe(
 			`"${CONTACT_EMAIL_FALLBACK_SENDER_NAME} ${CONTACT_EMAIL_SENDER_SUFFIX}" <from@sender.test>`,
@@ -102,6 +121,14 @@ describe("getFirstName", () => {
 
 	it("ignores leading whitespace and line breaks", () => {
 		expect(getFirstName("  \nAda\nBcc")).toBe("Ada");
+	});
+
+	it("strips format characters from the first name", () => {
+		expect(getFirstName("‮Ada​ Lovelace")).toBe("Ada");
+	});
+
+	it("falls back to a generic name when only format characters are given", () => {
+		expect(getFirstName("​﻿")).toBe(CONTACT_EMAIL_FALLBACK_SENDER_NAME);
 	});
 
 	it("falls back to a generic name for a blank value", () => {
@@ -119,8 +146,80 @@ describe("buildMailtoHref", () => {
 	});
 });
 
+describe("buildGmailComposeUrl", () => {
+	it("points at the Gmail compose page", () => {
+		const url = new URL(buildGmailComposeUrl("ada@example.com", "Hello"));
+
+		expect(`${url.origin}${url.pathname}`).toBe(CONTACT_GMAIL_COMPOSE_URL);
+		expect(url.origin).toBe("https://mail.google.com");
+		expect(url.pathname).toBe("/mail/");
+	});
+
+	it("sets the compose view, full-screen flag, recipient and subject", () => {
+		const { searchParams } = new URL(buildGmailComposeUrl("ada@example.com", "Hello"));
+
+		expect(searchParams.get("view")).toBe("cm");
+		expect(searchParams.get("fs")).toBe("1");
+		expect(searchParams.get("to")).toBe("ada@example.com");
+		expect(searchParams.get("su")).toBe("Hello");
+	});
+
+	it("sets no other parameters", () => {
+		const { searchParams } = new URL(buildGmailComposeUrl("ada@example.com", "Hello"));
+
+		expect(Array.from(searchParams.keys()).sort()).toEqual(["fs", "su", "to", "view"]);
+	});
+
+	it("encodes @ in the recipient", () => {
+		expect(buildGmailComposeUrl("ada@example.com", "Hello")).toContain("to=ada%40example.com");
+	});
+
+	it("encodes + in the recipient so it is not read as a space", () => {
+		const url = buildGmailComposeUrl("a+b@example.com", "Hello");
+
+		expect(url).toContain("to=a%2Bb%40example.com");
+		expect(new URL(url).searchParams.get("to")).toBe("a+b@example.com");
+	});
+
+	it("encodes & in the subject so it cannot start a new parameter", () => {
+		const url = buildGmailComposeUrl("ada@example.com", "Tom & Jerry");
+
+		expect(url).toContain("su=Tom+%26+Jerry");
+		expect(new URL(url).searchParams.get("su")).toBe("Tom & Jerry");
+	});
+
+	it("encodes spaces in the subject", () => {
+		const url = buildGmailComposeUrl("ada@example.com", "two words");
+
+		expect(url).not.toContain(" ");
+		expect(new URL(url).searchParams.get("su")).toBe("two words");
+	});
+
+	it("keeps injected parameters inside the values", () => {
+		const { searchParams } = new URL(buildGmailComposeUrl("ada@example.com&bcc=evil@x.test", "Hi#frag?x=1"));
+
+		expect(searchParams.get("to")).toBe("ada@example.com&bcc=evil@x.test");
+		expect(searchParams.get("su")).toBe("Hi#frag?x=1");
+		expect(searchParams.has("bcc")).toBe(false);
+	});
+});
+
 describe("renderContactEmailHtml", () => {
 	const values = { name: "Ada Lovelace", email: "ada@example.com", message: "Hello\nthere" };
+
+	function getHrefs(html: string): string[] {
+		return Array.from(html.matchAll(/href="([^"]*)"/g), (match) => match[1].replace(/&amp;/g, "&"));
+	}
+
+	function getGmailUrl(html: string): URL {
+		const href = getHrefs(html).find((candidate) => candidate.startsWith(CONTACT_GMAIL_COMPOSE_URL));
+
+		if (!href) {
+			throw new Error("No Gmail compose link found in the email HTML");
+		}
+
+		return new URL(href);
+	}
 
 	it("starts with the doctype", async () => {
 		expect((await renderContactEmailHtml(values)).startsWith(CONTACT_EMAIL_DOCTYPE)).toBe(true);
@@ -146,11 +245,74 @@ describe("renderContactEmailHtml", () => {
 		expect(await renderContactEmailHtml(values)).toContain("Hello<br/>there");
 	});
 
-	it("links the reply button to the visitor with their first name", async () => {
-		const html = await renderContactEmailHtml(values);
+	it("labels the reply button with the visitor's first name", async () => {
+		expect(await renderContactEmailHtml(values)).toContain("Reply to Ada");
+	});
 
-		expect(html).toContain('href="mailto:ada@example.com"');
-		expect(html).toContain("Reply to Ada");
+	it("links the reply button to a Gmail compose window addressed to the visitor", async () => {
+		const url = getGmailUrl(await renderContactEmailHtml(values));
+
+		expect(url.searchParams.get("view")).toBe("cm");
+		expect(url.searchParams.get("fs")).toBe("1");
+		expect(url.searchParams.get("to")).toBe("ada@example.com");
+	});
+
+	it("prefills the reply subject with the fixed reply subject", async () => {
+		const url = getGmailUrl(await renderContactEmailHtml(values));
+
+		expect(url.searchParams.get("su")).toBe(CONTACT_REPLY_SUBJECT);
+		expect(url.searchParams.get("su")).toBe("Let's talk about your project");
+	});
+
+	it.each(["Ada Lovelace", "Tom & Jerry", "Ada\r\nLovelace", "Ada‮​Lovelace", "​﻿"])(
+		"uses the same reply subject whatever the visitor name is (%j)",
+		async (name) => {
+			const url = getGmailUrl(await renderContactEmailHtml({ ...values, name }));
+
+			expect(url.searchParams.get("su")).toBe(CONTACT_REPLY_SUBJECT);
+		},
+	);
+
+	it("encodes the apostrophe and spaces of the reply subject inside the link", async () => {
+		const html = await renderContactEmailHtml(values);
+		const href = getHrefs(html).find((candidate) => candidate.startsWith(CONTACT_GMAIL_COMPOSE_URL)) ?? "";
+
+		expect(href).not.toContain(" ");
+		expect(new URL(href).searchParams.get("su")).toBe(CONTACT_REPLY_SUBJECT);
+	});
+
+	it("encodes a plus sign in the visitor email inside the reply link", async () => {
+		const html = await renderContactEmailHtml({ ...values, email: "a+b@example.com" });
+
+		expect(getGmailUrl(html).searchParams.get("to")).toBe("a+b@example.com");
+	});
+
+	it("keeps an ampersand in the visitor email from adding parameters to the reply link", async () => {
+		const url = getGmailUrl(await renderContactEmailHtml({ ...values, email: "a&bcc=evil@x.test" }));
+
+		expect(url.searchParams.get("to")).toBe("a&bcc=evil@x.test");
+		expect(url.searchParams.has("bcc")).toBe(false);
+	});
+
+	it("keeps an ampersand in the name from affecting the reply link", async () => {
+		const url = getGmailUrl(await renderContactEmailHtml({ ...values, name: "Tom & Jerry" }));
+
+		expect(url.searchParams.get("su")).toBe(CONTACT_REPLY_SUBJECT);
+		expect(url.searchParams.get("to")).toBe("ada@example.com");
+	});
+
+	it("keeps the mailto link on the email value", async () => {
+		const hrefs = getHrefs(await renderContactEmailHtml(values));
+
+		expect(hrefs).toContain("mailto:ada@example.com");
+	});
+
+	it("uses the Gmail link only on the button and the mailto link only on the email value", async () => {
+		const hrefs = getHrefs(await renderContactEmailHtml(values));
+
+		expect(hrefs).toHaveLength(2);
+		expect(hrefs.filter((href) => href.startsWith("mailto:"))).toHaveLength(1);
+		expect(hrefs.filter((href) => href.startsWith(CONTACT_GMAIL_COMPOSE_URL))).toHaveLength(1);
 	});
 
 	it("escapes HTML in the message", async () => {

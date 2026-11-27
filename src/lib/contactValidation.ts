@@ -60,5 +60,5 @@ export function parseContactRequestBody(body: unknown): ContactRequestBody | nul
 		return null;
 	}
 
-	return { name, email, message, website: typeof honeypot === "string" ? honeypot : "" };
+	return { name, email, message, [CONTACT_HONEYPOT_FIELD]: typeof honeypot === "string" ? honeypot : "" };
 }

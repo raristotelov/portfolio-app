@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import { CONTACT_API_PATH } from "@/constants/contact";
+import { CONTACT_API_PATH, CONTACT_HONEYPOT_FIELD, CONTACT_JSON_CONTENT_TYPE } from "@/constants/contact";
 import { trimContactValues, validateContactField, validateContactForm } from "@/lib/contactValidation";
 import type { ContactField, ContactFormErrors, ContactFormValues, ContactRequestBody, ContactSubmitStatus } from "@/types/contact";
 
@@ -10,7 +10,7 @@ async function postContactMessage(body: ContactRequestBody): Promise<boolean> {
 	try {
 		const response = await fetch(CONTACT_API_PATH, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: { "Content-Type": CONTACT_JSON_CONTENT_TYPE },
 			body: JSON.stringify(body),
 		});
 
@@ -30,13 +30,29 @@ export function useContactForm() {
 
 	const isSending = status === "sending";
 
-	const setFieldValue = useCallback((field: ContactField, value: string) => {
-		setValues((current) => ({ ...current, [field]: value }));
-
-		if (!validateContactField(field, value)) {
-			setErrors((current) => ({ ...current, [field]: undefined }));
-		}
+	const clearSuccess = useCallback(() => {
+		setStatus((current) => (current === "success" ? "idle" : current));
 	}, []);
+
+	const updateHoneypot = useCallback(
+		(value: string) => {
+			setHoneypot(value);
+			clearSuccess();
+		},
+		[clearSuccess],
+	);
+
+	const setFieldValue = useCallback(
+		(field: ContactField, value: string) => {
+			setValues((current) => ({ ...current, [field]: value }));
+			clearSuccess();
+
+			if (!validateContactField(field, value)) {
+				setErrors((current) => ({ ...current, [field]: undefined }));
+			}
+		},
+		[clearSuccess],
+	);
 
 	const handleSubmit = useCallback(
 		async (event: FormEvent<HTMLFormElement>) => {
@@ -59,7 +75,7 @@ export function useContactForm() {
 			isRequestInFlight.current = true;
 			setStatus("sending");
 
-			const isDelivered = await postContactMessage({ ...trimmedValues, website: honeypot });
+			const isDelivered = await postContactMessage({ ...trimmedValues, [CONTACT_HONEYPOT_FIELD]: honeypot });
 
 			isRequestInFlight.current = false;
 
@@ -73,5 +89,5 @@ export function useContactForm() {
 		[honeypot, values],
 	);
 
-	return { values, honeypot, errors, status, isSending, setFieldValue, setHoneypot, handleSubmit };
+	return { values, honeypot, errors, status, isSending, setFieldValue, setHoneypot: updateHoneypot, handleSubmit };
 }

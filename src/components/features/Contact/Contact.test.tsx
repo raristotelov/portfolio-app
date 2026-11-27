@@ -4,6 +4,8 @@ import {
 	CONTACT_API_PATH,
 	CONTACT_FAILURE_MESSAGE,
 	CONTACT_FIELD_ERRORS,
+	CONTACT_HONEYPOT_FIELD,
+	CONTACT_JSON_CONTENT_TYPE,
 	CONTACT_SENDING_LABEL,
 	CONTACT_SUBMIT_LABEL,
 	CONTACT_SUCCESS_MESSAGE,
@@ -27,6 +29,10 @@ function getEmailField() {
 
 function getMessageField() {
 	return screen.getByLabelText("Your Message");
+}
+
+function getTrapField() {
+	return screen.getByLabelText("Leave this field empty");
 }
 
 function getSubmitButton() {
@@ -73,14 +79,32 @@ describe("Contact form", () => {
 			expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 		});
 
-		it("renders a hidden honeypot field named website that is not reachable by keyboard", () => {
+		it("renders a hidden honeypot field that is not reachable by keyboard", () => {
 			render(<Contact />);
 
-			const honeypot = screen.getByLabelText("Website");
+			const honeypot = getTrapField();
 
-			expect(honeypot).toHaveAttribute("name", "website");
+			expect(honeypot).toHaveAttribute("id", "contact-trap");
+			expect(honeypot).toHaveAttribute("name", CONTACT_HONEYPOT_FIELD);
 			expect(honeypot).toHaveAttribute("tabindex", "-1");
 			expect(honeypot.closest("[aria-hidden='true']")).not.toBeNull();
+		});
+
+		it("tells browsers and password managers not to autofill the honeypot", () => {
+			render(<Contact />);
+
+			const honeypot = getTrapField();
+
+			expect(honeypot).toHaveAttribute("autocomplete", "off");
+			expect(honeypot).toHaveAttribute("data-lpignore", "true");
+			expect(honeypot).toHaveAttribute("data-1p-ignore");
+		});
+
+		it("does not use a name that autofill would recognise", () => {
+			render(<Contact />);
+
+			expect(screen.queryByLabelText("Website")).not.toBeInTheDocument();
+			expect(getTrapField()).not.toHaveAttribute("name", "website");
 		});
 	});
 
@@ -98,8 +122,13 @@ describe("Contact form", () => {
 
 			expect(url).toBe(CONTACT_API_PATH);
 			expect(init?.method).toBe("POST");
-			expect(init?.headers).toEqual({ "Content-Type": "application/json" });
-			expect(JSON.parse(String(init?.body))).toEqual({ name: "Ada Lovelace", email: "ada@example.com", message: "Hello there", website: "" });
+			expect(init?.headers).toEqual({ "Content-Type": CONTACT_JSON_CONTENT_TYPE });
+			expect(JSON.parse(String(init?.body))).toEqual({
+				name: "Ada Lovelace",
+				email: "ada@example.com",
+				message: "Hello there",
+				[CONTACT_HONEYPOT_FIELD]: "",
+			});
 		});
 
 		it("sends trimmed values", async () => {
@@ -115,7 +144,7 @@ describe("Contact form", () => {
 				name: "Ada",
 				email: "ada@example.com",
 				message: "Hi",
-				website: "",
+				[CONTACT_HONEYPOT_FIELD]: "",
 			});
 		});
 
@@ -124,10 +153,10 @@ describe("Contact form", () => {
 			render(<Contact />);
 
 			await fillValidForm(user);
-			await user.type(screen.getByLabelText("Website"), "spam.example");
+			await user.type(getTrapField(), "spam.example");
 			await user.click(getSubmitButton());
 
-			expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toHaveProperty("website", "spam.example");
+			expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toHaveProperty(CONTACT_HONEYPOT_FIELD, "spam.example");
 		});
 
 		it("shows the success alert with the status role", async () => {
@@ -156,14 +185,14 @@ describe("Contact form", () => {
 			render(<Contact />);
 
 			await fillValidForm(user);
-			await user.type(screen.getByLabelText("Website"), "x");
+			await user.type(getTrapField(), "x");
 			await user.click(getSubmitButton());
 			await screen.findByRole("status");
 
 			expect(getNameField()).toHaveValue("");
 			expect(getEmailField()).toHaveValue("");
 			expect(getMessageField()).toHaveValue("");
-			expect(screen.getByLabelText("Website")).toHaveValue("");
+			expect(getTrapField()).toHaveValue("");
 		});
 
 		it("re-enables the submit button after success", async () => {
@@ -176,6 +205,48 @@ describe("Contact form", () => {
 
 			expect(getSubmitButton()).toBeEnabled();
 			expect(getSubmitButton()).toHaveTextContent(CONTACT_SUBMIT_LABEL);
+		});
+
+		it("keeps the success alert until the visitor edits something", async () => {
+			const user = userEvent.setup();
+			render(<Contact />);
+
+			await fillValidForm(user);
+			await user.click(getSubmitButton());
+			await screen.findByRole("status");
+
+			expect(screen.getByRole("status")).toHaveTextContent(CONTACT_SUCCESS_MESSAGE);
+		});
+
+		it.each([
+			["name", getNameField],
+			["email", getEmailField],
+			["message", getMessageField],
+			["honeypot", getTrapField],
+		])("clears the success alert when the %s is edited", async (_label, getField) => {
+			const user = userEvent.setup();
+			render(<Contact />);
+
+			await fillValidForm(user);
+			await user.click(getSubmitButton());
+			await screen.findByRole("status");
+			await user.type(getField(), "a");
+
+			expect(screen.queryByRole("status")).not.toBeInTheDocument();
+		});
+
+		it("lets the visitor send a second message after editing", async () => {
+			const user = userEvent.setup();
+			render(<Contact />);
+
+			await fillValidForm(user);
+			await user.click(getSubmitButton());
+			await screen.findByRole("status");
+			await fillValidForm(user);
+			await user.click(getSubmitButton());
+
+			expect(await screen.findByRole("status")).toBeInTheDocument();
+			expect(fetchMock).toHaveBeenCalledTimes(2);
 		});
 	});
 

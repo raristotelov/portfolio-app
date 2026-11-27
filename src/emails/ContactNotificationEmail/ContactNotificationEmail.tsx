@@ -8,6 +8,7 @@ export interface ContactNotificationEmailProps {
 	email: string;
 	message: string;
 	firstName: string;
+	emailHref: string;
 	replyHref: string;
 }
 
@@ -155,7 +156,7 @@ const footer: CSSProperties = {
 	color: EMAIL_COLORS.textSecondary,
 };
 
-export default function ContactNotificationEmail({ name, email, message, firstName, replyHref }: ContactNotificationEmailProps) {
+export default function ContactNotificationEmail({ name, email, message, firstName, emailHref, replyHref }: ContactNotificationEmailProps) {
 	const messageLines = message.split(LINE_BREAK_PATTERN);
 
 	return (
@@ -193,7 +194,7 @@ export default function ContactNotificationEmail({ name, email, message, firstNa
 
 												<p style={label}>Email</p>
 												<p style={value}>
-													<a href={replyHref} style={emailLink}>
+													<a href={emailHref} style={emailLink}>
 														{email}
 													</a>
 												</p>
