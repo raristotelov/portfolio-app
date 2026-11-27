@@ -1,0 +1,57 @@
+@use "../../../styles/mixins" as *;
+
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 0;
+}
+
+.label {
+	@include visually-hidden;
+}
+
+.input {
+	width: 100%;
+	font-family: var(--font-sans);
+	font-size: 14px;
+	padding: 14px 18px;
+	border: 1px solid var(--border-strong);
+	border-radius: 12px;
+	background: var(--surface);
+	color: var(--text-primary);
+	outline: none;
+	transition: border-color 0.2s;
+
+	&::placeholder {
+		color: var(--text-secondary);
+		font-weight: 300;
+	}
+
+	&:focus {
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 8%, transparent);
+	}
+
+	&[aria-invalid="true"],
+	&[aria-invalid="true"]:focus {
+		border-color: var(--error);
+	}
+
+	&[aria-invalid="true"]:focus {
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 12%, transparent);
+	}
+}
+
+.textarea {
+	min-height: 160px;
+	resize: vertical;
+}
+
+.error {
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 20.8px;
+	color: var(--error);
+	overflow-wrap: anywhere;
+}
