@@ -4,6 +4,7 @@ import { useState } from "react";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
 import { navLinks } from "@/constants/navigation";
 import Button from "@/components/ui/Button";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import styles from "./Navbar.module.scss";
 
 export default function Navbar() {
@@ -24,39 +25,45 @@ export default function Navbar() {
 					))}
 				</ul>
 
-				<div className={styles.desktopCta}>
-					<Button as="a" href="#contact" variant="primary">
-						Hire Me
-					</Button>
-				</div>
+				<div className={styles.actions}>
+					<ThemeToggle />
 
-				<button
-					className={styles.hamburger}
-					onClick={() => setOpen(!open)}
-					aria-label="Toggle menu"
-					aria-expanded={open}
-					aria-controls="mobile-menu"
-				>
-					{open ? <HiX size={24} /> : <HiMenuAlt3 size={24} />}
-				</button>
-			</div>
-
-			<div id="mobile-menu" className={`${styles.mobileMenu} ${open ? styles.open : ""}`}>
-				<ul className={styles.mobileLinks}>
-					{navLinks.map((link) => (
-						<li key={link.href}>
-							<a href={link.href} onClick={() => setOpen(false)}>
-								{link.label}
-							</a>
-						</li>
-					))}
-
-					<li>
+					<div className={styles.desktopCta}>
 						<Button as="a" href="#contact" variant="primary">
 							Hire Me
 						</Button>
-					</li>
-				</ul>
+					</div>
+
+					<button
+						className={styles.hamburger}
+						onClick={() => setOpen(!open)}
+						aria-label="Toggle menu"
+						aria-expanded={open}
+						aria-controls="mobile-menu"
+					>
+						{open ? <HiX size={24} /> : <HiMenuAlt3 size={24} />}
+					</button>
+				</div>
+			</div>
+
+			<div id="mobile-menu" className={`${styles.mobileMenu} ${open ? styles.open : ""}`}>
+				<div className={styles.mobileMenuInner}>
+					<ul className={styles.mobileLinks}>
+						{navLinks.map((link) => (
+							<li key={link.href}>
+								<a href={link.href} className={styles.mobileLink} onClick={() => setOpen(false)}>
+									{link.label}
+								</a>
+							</li>
+						))}
+
+						<li>
+							<Button as="a" href="#contact" variant="primary">
+								Hire Me
+							</Button>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</nav>
 	);

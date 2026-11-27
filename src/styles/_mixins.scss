@@ -1,0 +1,39 @@
+$breakpoint-tablet: 600px;
+$breakpoint-desktop: 1280px;
+
+@mixin mobile {
+	@media (max-width: #{$breakpoint-tablet - 1px}) {
+		@content;
+	}
+}
+
+@mixin tablet {
+	@media (min-width: $breakpoint-tablet) and (max-width: #{$breakpoint-desktop - 1px}) {
+		@content;
+	}
+}
+
+@mixin tablet-up {
+	@media (min-width: $breakpoint-tablet) {
+		@content;
+	}
+}
+
+@mixin below-desktop {
+	@media (max-width: #{$breakpoint-desktop - 1px}) {
+		@content;
+	}
+}
+
+@mixin fade-up-keyframes {
+	@keyframes fadeUp {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+}

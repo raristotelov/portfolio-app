@@ -1,16 +1,18 @@
+import NextjsIcon from "@/components/ui/NextjsIcon";
+import VercelIcon from "@/components/ui/VercelIcon";
 import type { Skill } from "@/types/skill";
 
 export const skills: Skill[] = [
-	{ name: "JavaScript", icon: "/skills/javascript.svg" },
-	{ name: "TypeScript", icon: "/skills/typescript.svg" },
-	{ name: "React", icon: "/skills/react.svg" },
-	{ name: "Next.js", icon: "/skills/nextjs.svg" },
-	{ name: "Tailwind CSS", icon: "/skills/tailwindcss.svg" },
-	{ name: "Node.js", icon: "/skills/nodejs.svg" },
-	{ name: "PostgreSQL", icon: "/skills/postgresql.svg" },
-	{ name: "Supabase", icon: "/skills/supabase.svg" },
-	{ name: "MongoDB", icon: "/skills/mongodb.svg" },
-	{ name: "Docker", icon: "/skills/docker.svg" },
-	{ name: "Vercel", icon: "/skills/vercel.svg" },
-	{ name: "Git", icon: "/skills/git.svg" },
+	{ name: "JavaScript", icon: { kind: "image", src: "/skills/javascript.svg" } },
+	{ name: "TypeScript", icon: { kind: "image", src: "/skills/typescript.svg" } },
+	{ name: "React", icon: { kind: "image", src: "/skills/react.svg" } },
+	{ name: "Next.js", icon: { kind: "inline", Component: NextjsIcon } },
+	{ name: "Tailwind CSS", icon: { kind: "image", src: "/skills/tailwindcss.svg" } },
+	{ name: "Node.js", icon: { kind: "image", src: "/skills/nodejs.svg" } },
+	{ name: "PostgreSQL", icon: { kind: "image", src: "/skills/postgresql.svg" } },
+	{ name: "Supabase", icon: { kind: "image", src: "/skills/supabase.svg" } },
+	{ name: "MongoDB", icon: { kind: "image", src: "/skills/mongodb.svg" } },
+	{ name: "Docker", icon: { kind: "image", src: "/skills/docker.svg" } },
+	{ name: "Vercel", icon: { kind: "inline", Component: VercelIcon } },
+	{ name: "Git", icon: { kind: "image", src: "/skills/git.svg" } },
 ];

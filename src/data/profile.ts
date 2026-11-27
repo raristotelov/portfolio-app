@@ -1,9 +1,9 @@
 export const siteMetadata = {
-	name: "Ivan Aristotelov",
-	firstName: "Ivan",
+	name: "Radostin Aristotelov",
+	firstName: "Radostin",
 	lastName: "Aristotelov",
-	initials: "IA",
+	initials: "RA",
 	role: "Full Stack Developer",
-	email: "hello@raristotelov.dev",
+	email: "radostin.aristotelov@gmail.com",
 	location: "Bulgaria, EU · UTC+2",
 };

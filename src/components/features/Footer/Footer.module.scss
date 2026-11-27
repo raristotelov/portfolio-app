@@ -1,5 +1,7 @@
+@use "../../../styles/mixins" as *;
+
 .footer {
-	border-top: 1px solid var(--gray-100);
+	border-top: 1px solid var(--surface-muted);
 	background: var(--surface);
 }
 
@@ -11,10 +13,17 @@
 	margin: 0 auto;
 	padding: 24px 0;
 
-	@media (max-width: 900px) {
+	@include tablet {
+		flex-wrap: wrap;
+		gap: 16px;
+		padding: 24px 32px;
+	}
+
+	@include mobile {
 		flex-direction: column;
 		gap: 16px;
 		padding: 24px 32px;
+		text-align: center;
 	}
 }
 
@@ -24,16 +33,10 @@
 	font-weight: 300;
 }
 
-.footerSocial {
-	// Override the fadeUp animation from SocialLinks
-	opacity: 1 !important;
-	animation: none !important;
-}
-
 .backToTop {
 	font-size: 13px;
 	color: var(--text-secondary);
-	font-weight: 500;
+	font-weight: 600;
 	transition: color 0.2s;
 
 	&:hover {

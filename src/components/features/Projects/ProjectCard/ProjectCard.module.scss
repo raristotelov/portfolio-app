@@ -27,7 +27,7 @@
 .overlay {
 	position: absolute;
 	inset: 0;
-	background: rgba(242, 242, 242, 0.8);
+	background: color-mix(in srgb, var(--background) 80%, transparent);
 	opacity: 0;
 	transition: opacity 0.3s;
 	display: flex;
@@ -64,7 +64,7 @@
 }
 
 .tag {
-	background: rgba(0, 85, 255, 0.1);
+	background: color-mix(in srgb, var(--accent) 10%, transparent);
 	color: var(--accent);
 	font-family: var(--font-mono);
 	font-size: 12px;

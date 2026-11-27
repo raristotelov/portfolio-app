@@ -2,7 +2,7 @@
 
 **Status:** In Development
 **Route:** `/`
-**Figma:** https://www.figma.com/design/GU5UnfHbU6euTRmiU0xMQz/Portfolio_app?node-id=0-1&p=f&t=gBeAc42M7DVYxC3F-0 — node-ids per canvas to be added
+**Figma:** Home — Light: Desktop `54:66`, Tablet `45:70`, Mobile `45:218`, Mobile Menu Open `45:363`. Dark: Desktop `63:76`, Tablet `66:178`, Mobile `66:419`, Mobile Menu Open `66:482`
 
 Single-page portfolio; navigation scrolls between section anchors.
 

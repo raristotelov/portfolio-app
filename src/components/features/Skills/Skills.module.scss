@@ -1,9 +1,11 @@
+@use "../../../styles/mixins" as *;
+
 .section {
 	padding: 80px 64px;
-	background: var(--gray-100);
-	border-top: 1px solid rgba(0, 0, 0, 0.04);
+	background: var(--surface-muted);
+	border-top: 1px solid var(--border-subtle);
 
-	@media (max-width: 900px) {
+	@include below-desktop {
 		padding: 48px 32px;
 	}
 }
@@ -24,14 +26,18 @@
 	font-weight: 800;
 	color: var(--text-primary);
 	letter-spacing: -1.5px;
+
+	@include mobile {
+		font-size: clamp(28px, 9.23vw, 36px);
+	}
 }
 
 .grid {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 16px;
 
-	@media (min-width: 640px) {
-		grid-template-columns: repeat(4, 1fr);
+	@include tablet-up {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 	}
 }
