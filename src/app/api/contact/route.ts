@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { CONTACT_INVALID_REQUEST_MESSAGE, CONTACT_SERVER_ERROR_MESSAGE } from "@/constants/contact";
-import { buildContactEmailContent, readContactEmailConfig } from "@/lib/contactEmail";
+import { buildContactEmailContent, buildContactSender, readContactEmailConfig, renderContactEmailHtml } from "@/lib/contactEmail";
 import { parseContactRequestBody, trimContactValues, validateContactForm } from "@/lib/contactValidation";
 import type { ContactServerErrorResponse, ContactSuccessResponse, ContactValidationErrorResponse } from "@/types/contact";
 
@@ -55,11 +55,14 @@ export async function POST(request: Request): Promise<NextResponse<ContactRespon
 	const { subject, text } = buildContactEmailContent(values);
 
 	try {
+		const html = await renderContactEmailHtml(values);
+
 		const { error } = await new Resend(config.apiKey).emails.send({
-			from: config.from,
+			from: buildContactSender(values.name, config.from),
 			to: config.to,
 			replyTo: values.email,
 			subject,
+			html,
 			text,
 		});
 

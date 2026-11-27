@@ -35,3 +35,8 @@ export const CONTACT_SUBMIT_LABEL = "Send Message";
 export const CONTACT_SENDING_LABEL = "Sending…";
 
 export const CONTACT_EMAIL_SUBJECT_PREFIX = "New portfolio message from";
+export const CONTACT_EMAIL_SENDER_SUFFIX = "via Portfolio";
+export const CONTACT_EMAIL_FALLBACK_SENDER_NAME = "Someone";
+export const CONTACT_EMAIL_DOCTYPE = "<!DOCTYPE html>";
+export const CONTACT_EMAIL_HEADING = "New message from your portfolio";
+export const CONTACT_EMAIL_FOOTER = "Sent from the contact form on raristotelov.dev";
