@@ -82,7 +82,7 @@
 .tagline {
 	font-size: 20px;
 	font-weight: 400;
-	color: var(--gray-700);
+	color: var(--text-strong);
 	margin-bottom: 20px;
 	line-height: 1.4;
 	opacity: 0;
@@ -172,7 +172,7 @@
 	position: absolute;
 	bottom: 8px;
 	right: -4px;
-	background: var(--accent);
+	background: var(--accent-fill);
 	color: var(--static-white);
 	font-family: var(--font-mono);
 	font-size: 10px;

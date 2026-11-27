@@ -2,17 +2,21 @@ import { DARK_SCHEME_QUERY, DARK_THEME, DEFAULT_THEME, THEME_ATTRIBUTE, THEME_ST
 
 export const themeInitScript = `
 (function () {
-	var theme = null;
+	var theme = ${JSON.stringify(DEFAULT_THEME)};
+	var saved = null;
 	try {
-		var saved = window.localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});
+		saved = window.localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});
+	} catch (error) {
+		saved = null;
+	}
+	try {
 		if (${JSON.stringify(THEMES)}.indexOf(saved) !== -1) {
 			theme = saved;
+		} else if (window.matchMedia(${JSON.stringify(DARK_SCHEME_QUERY)}).matches) {
+			theme = ${JSON.stringify(DARK_THEME)};
 		}
 	} catch (error) {
-		theme = null;
-	}
-	if (theme === null) {
-		theme = window.matchMedia(${JSON.stringify(DARK_SCHEME_QUERY)}).matches ? ${JSON.stringify(DARK_THEME)} : ${JSON.stringify(DEFAULT_THEME)};
+		theme = ${JSON.stringify(DEFAULT_THEME)};
 	}
 	document.documentElement.setAttribute(${JSON.stringify(THEME_ATTRIBUTE)}, theme);
 })();

@@ -8,7 +8,7 @@
 	z-index: 50;
 	background: color-mix(in srgb, var(--surface) 80%, transparent);
 	backdrop-filter: blur(12px);
-	border-bottom: 1px solid var(--gray-100);
+	border-bottom: 1px solid var(--surface-muted);
 }
 
 .inner {
@@ -91,7 +91,7 @@
 		grid-template-rows 0.3s,
 		visibility 0s linear 0.3s;
 	background: var(--surface);
-	border-bottom: 1px solid var(--gray-100);
+	border-bottom: 1px solid var(--surface-muted);
 
 	@include tablet-up {
 		display: none;

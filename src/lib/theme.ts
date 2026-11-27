@@ -10,7 +10,7 @@ export function applyTheme(theme: Theme): void {
 
 	try {
 		window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-	} catch (error) {
-		console.warn("Theme preference could not be saved; it will apply for this visit only.", error);
+	} catch {
+		return;
 	}
 }

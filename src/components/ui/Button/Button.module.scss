@@ -12,11 +12,11 @@
 }
 
 .primary {
-	background: var(--accent);
+	background: var(--accent-fill);
 	color: var(--static-white);
 
 	&:hover {
-		background: var(--accent-light);
+		background: var(--accent-fill-hover);
 		transform: translateY(-1px);
 		box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 30%, transparent);
 	}

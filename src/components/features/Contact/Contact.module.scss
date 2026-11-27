@@ -46,7 +46,7 @@
 }
 
 .card {
-	background: var(--gray-100);
+	background: var(--surface-muted);
 	border-radius: 16px;
 	padding: 32px 24px;
 	text-align: center;
@@ -125,7 +125,7 @@
 	font-family: var(--font-sans);
 	font-size: 14px;
 	padding: 14px 18px;
-	border: 1px solid var(--gray-300);
+	border: 1px solid var(--border-strong);
 	border-radius: 12px;
 	background: var(--surface);
 	color: var(--text-primary);
@@ -154,7 +154,7 @@
 	font-family: var(--font-sans);
 	font-size: 14px;
 	font-weight: 600;
-	background: var(--accent);
+	background: var(--accent-fill);
 	color: var(--static-white);
 	border: none;
 	border-radius: 12px;
@@ -164,7 +164,7 @@
 	letter-spacing: -0.2px;
 
 	&:hover {
-		background: var(--accent-hover);
+		background: var(--accent-fill-hover);
 		transform: translateY(-1px);
 		box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 30%, transparent);
 	}
